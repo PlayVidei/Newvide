@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamVid - Watch</title>
+
+    <!-- SCRIPT POPUNDER ADSTERRA -->
+    <script src="https://thewilddetail.com/d8/8e/b3/d88eb3d0170ef3478f8f44203ace8da9.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #0b0c0f;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+        }
+
+        .logo span {
+            color: #ff2a4b;
+        }
+
+        .btn-get-premium {
+            background-color: transparent;
+            border: 1px solid #282c37;
+            color: #e1e4ea;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            font-size: 14px;
+            color: #6c7385;
+            margin-top: 2px;
+        }
+
+        /* Video Player Area */
+        .player-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background-color: #151821;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* LINK GAMBAR THUMBNAIL ANDA TELAH DIPASANG DI SINI */
+            background-image: url('https://i.ibb.co.com/fYNyD921/Chat-GPT-Image-24-Sep-2026-22-26-50.png');
+            background-size: cover;
+            background-position: center;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .play-btn {
+            width: 58px;
+            height: 58px;
+            background-color: #ff2a4b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(255, 42, 75, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .play-icon {
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 9px 0 9px 16px;
+            border-color: transparent transparent transparent #ffffff;
+            margin-left: 3px;
+        }
+
+        .duration-badge {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: rgba(10, 11, 14, 0.85);
+            color: #e1e4ea;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* Tags */
+        .tags {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .tag {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            background-color: #181b22;
+            color: #8c94a6;
+        }
+
+        .tag.hd {
+            background-color: #ff2a4b;
+            color: #ffffff;
+        }
+
+        /* Detail Video */
+        .video-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .video-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.3;
+        }
+
+        .video-description {
+            font-size: 13.5px;
+            color: #8c94a6;
+            line-height: 1.5;
+        }
+
+        /* Action Buttons */
+        .action-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .row-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: opacity 0.2s;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-watch {
+            flex: 1;
+            background-color: #ff2a4b;
+            color: #ffffff;
+        }
+
+        .btn-premium {
+            flex: 1;
+            background-color: #181b22;
+            color: #ffffff;
+        }
+
+        .btn-share {
+            width: 100%;
+            background-color: #181b22;
+            color: #ffffff;
+        }
+
+        /* Banner Iklan */
+        .ad-container {
+            margin-top: 8px;
+            border: 1px dashed #222631;
+            background-color: #0f1117;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            color: #4a5162;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .ad-title {
+            font-size: 11px;
+            letter-spacing: 1.2px;
+            font-weight: 600;
+        }
+
+        .ad-dimension {
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <!-- Header / Logo -->
+        <header>
+            <div class="logo">Stream<span>Vid</span></div>
+            <!-- Tombol Get Premium (Smartlink) -->
+            <a href="https://thewilddetail.com/z02a1bxd?key=f48d1b3a91d0b1fd3db51c3c384a044b" target="_blank" rel="noopener noreferrer" class="btn-get-premium">Get Premium</a>
+        </header>
+
+        <!-- Breadcrumb Navigasi -->
+        <div class="breadcrumb">
+            Home / Videos / Watch
+        </div>
+
+        <!-- Player Video Utama (Smartlink & Thumbnail Gambar Baru) -->
+        <a href="https://thewilddetail.com/z02a1bxd?key=f48d1b3a91d0b1fd3db51c3c384a044b" target="_blank" rel="noopener noreferrer" class="player-container">
+            <div class="play-btn">
+                <div class="play-icon"></div>
+            </div>
+            <div class="duration-badge">16:12</div>
+        </a>
+
+        <!-- Label / Tags -->
+        <div class="tags">
+            <span class="tag hd">HD</span>
+            <span class="tag">2026</span>
+            <span class="tag">Exclusive</span>
+        </div>
+
+        <!-- Judul & Deskripsi Video -->
+        <div class="video-details">
+            <h1 class="video-title">Aku Menikmati Setiap Permainnya</h1>
+            <p class="video-description">
+                Nikmati video dengan tampilan player modern, cepat dan responsif di perangkat mobile maupun desktop.
+            </p>
+        </div>
+
+        <!-- Tombol Aksi (Smartlink) -->
+        <div class="action-group">
+            <div class="row-buttons">
+                <!-- Tombol Watch Video -->
+                <a href="https://thewilddetail.com/z02a1bxd?key=f48d1b3a91d0b1fd3db51c3c384a044b" target="_blank" rel="noopener noreferrer" class="btn btn-watch">► Watch Video</a>
+                <!-- Tombol Premium -->
+                <a href="https://thewilddetail.com/z02a1bxd?key=f48d1b3a91d0b1fd3db51c3c384a044b" target="_blank" rel="noopener noreferrer" class="btn btn-premium">✨ Premium</a>
+            </div>
+            <!-- Tombol Share -->
+            <a href="https://thewilddetail.com/z02a1bxd?key=f48d1b3a91d0b1fd3db51c3c384a044b" target="_blank" rel="noopener noreferrer" class="btn btn-share">↗ Share</a>
+        </div>
+
+        <!-- Slot Iklan Banner (Smartlink) -->
+        <a href="https://thewilddetail.com/z02a1bxd?key=f48d1b3a91d0b1fd3db51c3c384a044b" target="_blank" rel="noopener noreferrer" class="ad-container">
+            <div class="ad-title">ADVERTISEMENT</div>
+            <div class="ad-dimension">728 × 90</div>
+        </a>
+    </div>
+
+</body>
+</html>
