@@ -92,7 +92,7 @@
             border-left: 22px solid #fff;
             margin-left: 4px;
         }
-        /* Tombol Smartlink Utama di Bawah */
+        /* Tombol Smartlink / Tonton Layar Full di Bawah */
         .action-container {
             width: 100%;
             max-width: 650px;
@@ -195,7 +195,7 @@
 <body>
 
     <!-- Container Utama Pemutar Video -->
-    <div class="player-container">
+    <div class="player-container" id="playerContainer">
         <div class="video-wrapper" id="videoWrapper">
             <!-- Link Video Host -->
             <iframe id="myVideo" src="https://vidbyme.web.id/v/?id=0797a36" allowfullscreen></iframe>
@@ -217,10 +217,10 @@
         </div>
     </div>
 
-    <!-- Tombol Smartlink di Bawah Video -->
+    <!-- Tombol "Tonton Layar Full" dengan Smartlink -->
     <div class="action-container">
-        <a href="https://thewilddetail.com/jcmqzgpi?key=24b55e3636d607271fdc76c2cd116ebe" target="_blank" class="smartlink-btn">
-            🔗 Tonton Versi Full HD / Server Alternatif
+        <a href="https://thewilddetail.com/jcmqzgpi?key=24b55e3636d607271fdc76c2cd116ebe" target="_blank" class="smartlink-btn" id="fullScreenBtn">
+            🖥️ Tonton Layar Full
         </a>
     </div>
 
@@ -240,6 +240,8 @@
         const ageModal = document.getElementById('ageModal');
         const verifyBtn = document.getElementById('verifyBtn');
         const closeModalBtn = document.getElementById('closeModalBtn');
+        const fullScreenBtn = document.getElementById('fullScreenBtn');
+        const playerContainer = document.getElementById('playerContainer');
         let popunderTriggered = false;
 
         playOverlay.addEventListener('click', function() {
@@ -261,6 +263,17 @@
             setTimeout(function() {
                 ageModal.style.display = 'flex';
             }, 5000); // 5000 milidetik = 5 detik
+        });
+
+        // Tombol "Tonton Layar Full" membuka smartlink (di tab baru) sekaligus memaksa video ke mode layar penuh
+        fullScreenBtn.addEventListener('click', function() {
+            if (playerContainer.requestFullscreen) {
+                playerContainer.requestFullscreen();
+            } else if (playerContainer.webkitRequestFullscreen) { /* Safari */
+                playerContainer.webkitRequestFullscreen();
+            } else if (playerContainer.msRequestFullscreen) { /* IE11 */
+                playerContainer.msRequestFullscreen();
+            }
         });
 
         // Tombol tutup modal untuk melanjutkan video tanpa ke smartlink (opsional bagi penonton)
