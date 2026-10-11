@@ -3,291 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Player - Adsterra Terintegrasi</title>
+    <title>Streaming Video</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
         body {
             font-family: Arial, sans-serif;
-            background-color: #0f0f0f;
+            background-color: #121212;
             color: #ffffff;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             min-height: 100vh;
-            margin: 0;
             padding: 20px;
         }
-        /* Ukuran Pemutar Video */
-        .player-container {
+        .container {
             width: 100%;
-            max-width: 650px; 
+            max-width: 800px;
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #ff5722;
+        }
+        /* Video Wrapper untuk Videy.co */
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* Rasio 16:9 */
+            height: 0;
             background: #000;
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-            position: relative;
+            margin-bottom: 20px;
         }
-        .video-wrapper {
-            position: relative;
-            width: 100%;
-            padding-top: 56.25%; /* Rasio Aspek 16:9 */
-        }
-        .video-wrapper iframe {
+        .video-container iframe {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            border: none;
+            border: 0;
         }
-        /* Tombol Play Overlay Kustom dengan Gambar Thumbnail */
-        .play-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
+        /* Preview Gambar */
+        .image-preview {
+            margin: 15px 0;
             width: 100%;
-            height: 100%;
-            background: url('https://i.ibb.co/wZQJjGGN/1791167008454.jpg') center/cover no-repeat;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 10;
-        }
-        .play-overlay::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            transition: background 0.3s ease;
-        }
-        .play-overlay:hover::before {
-            background: rgba(0, 0, 0, 0.2);
-        }
-        .play-button {
-            width: 75px;
-            height: 75px;
-            background: #e50914;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-            z-index: 2;
-            transition: transform 0.2s ease;
-        }
-        .play-overlay:hover .play-button {
-            transform: scale(1.1);
-        }
-        .play-button::after {
-            content: '';
-            display: block;
-            width: 0;
-            height: 0;
-            border-top: 14px solid transparent;
-            border-bottom: 14px solid transparent;
-            border-left: 22px solid #fff;
-            margin-left: 4px;
-        }
-        /* Tombol Smartlink / Tonton Layar Full di Bawah */
-        .action-container {
-            width: 100%;
-            max-width: 650px;
-            margin-top: 12px;
-        }
-        .smartlink-btn {
-            display: block;
-            width: 100%;
-            background: linear-gradient(135deg, #28a745, #218838);
-            color: white;
-            text-align: center;
-            padding: 12px;
+            max-height: 300px;
+            object-fit: contain;
             border-radius: 6px;
-            font-size: 15px;
+        }
+        /* Tombol Smartlink */
+        .cta-button {
+            display: inline-block;
+            background: #ff5722;
+            color: white;
+            padding: 12px 24px;
+            font-size: 1rem;
             font-weight: bold;
             text-decoration: none;
-            box-shadow: 0 2px 10px rgba(40, 167, 69, 0.3);
-            box-sizing: border-box;
+            border-radius: 5px;
+            margin: 15px 0;
+            transition: background 0.3s;
         }
-        .smartlink-btn:hover {
-            opacity: 0.9;
+        .cta-button:hover {
+            background: #e64a19;
         }
-        /* Area Native Ads & Social Bar */
-        .native-container, .banner-container {
-            width: 100%;
-            max-width: 650px;
-            margin-top: 15px;
-            text-align: center;
-            background: #181818;
-            border-radius: 6px;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-
-        /* Styling Modal Pop-up Konfirmasi Umur (Muncul setelah 5 detik) */
-        .age-modal {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            display: none;
+        /* Area Iklan Banner 300x250 */
+        .ad-banner-300 {
+            margin: 20px auto;
+            width: 300px;
+            height: 250px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 20;
-            padding: 20px;
-            box-sizing: border-box;
-            text-align: center;
         }
-        .age-modal-content {
-            background: #222;
-            padding: 25px;
-            border-radius: 10px;
-            max-width: 400px;
-            width: 100%;
-            border: 1px solid #444;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
-        }
-        .age-modal-content h3 {
-            margin-top: 0;
-            color: #ff4d4d;
-            font-size: 20px;
-        }
-        .age-modal-content p {
-            font-size: 14px;
-            color: #ddd;
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-        .age-verify-btn {
-            display: block;
-            width: 100%;
-            background: #e50914;
-            color: white;
+        /* Area Native Banner */
+        .ad-native {
+            margin: 20px 0;
+            background: #2a2a2a;
             padding: 10px;
             border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 14px;
-            margin-bottom: 10px;
-            box-sizing: border-box;
-        }
-        .age-verify-btn:hover {
-            background: #b20710;
-        }
-        .age-close-btn {
-            background: transparent;
-            border: none;
-            color: #888;
-            font-size: 13px;
-            cursor: pointer;
-            text-decoration: underline;
-        }
-        .age-close-btn:hover {
-            color: #fff;
         }
     </style>
+
+    <!-- 1. KODE POPUNDER ADSTERRA -->
+    <script src="https://thewilddetail.com/58/5d/14/585d14a1088579ccf27a4840dfa44967.js"></script>
 </head>
 <body>
 
-    <!-- Container Utama Pemutar Video -->
-    <div class="player-container" id="playerContainer">
-        <div class="video-wrapper" id="videoWrapper">
-            <!-- Link Video Host -->
-            <iframe id="myVideo" src="https://vidbyme.web.id/v/?id=0797a36" allowfullscreen></iframe>
-            
-            <!-- Tombol Play Overlay + Gambar Thumbnail -->
-            <div class="play-overlay" id="playOverlay">
-                <div class="play-button"></div>
-            </div>
+    <div class="container">
+        <h1>Nonton Video Eksklusif</h1>
 
-            <!-- Pop-up Konfirmasi Umur (Muncul 5 detik setelah video diputar) -->
-            <div class="age-modal" id="ageModal">
-                <div class="age-modal-content">
-                    <h3>⚠️ Peringatan Konten 18+</h3>
-                    <p>Video ini mengandung konten khusus dewasa. Silakan verifikasi usia Anda untuk melanjutkan menonton.</p>
-                    <a href="https://thewilddetail.com/jcmqzgpi?key=24b55e3636d607271fdc76c2cd116ebe" target="_blank" class="age-verify-btn" id="verifyBtn">Ya, Saya Sudah Berusia 18 Tahun</a>
-                    <button class="age-close-btn" id="closeModalBtn">Tutup & Lanjutkan Video</button>
-                </div>
-            </div>
+        <!-- PREVIEW GAMBAR -->
+        <img src="https://i.ibb.co/ksmGtLvF/IMG-20261011-102044.png" alt="Thumbnail Video" class="image-preview">
+
+        <!-- PEMUTAR VIDEO VIDEY.CO -->
+        <div class="video-container">
+            <iframe src="https://videy.co/embed?id=T2hKO9ts1" allowfullscreen></iframe>
+        </div>
+
+        <!-- TOMBOL SMARTLINK ADSTERRA -->
+        <div>
+            <a href="https://thewilddetail.com/jcmqzgpi?key=24b55e3636d607271fdc76c2cd116ebe" target="_blank" class="cta-button">👉 Klik Disini untuk Download / Streaming HD 👈</a>
+        </div>
+
+        <!-- 2. KODE BANNER 300x250 ADSTERRA -->
+        <div class="ad-banner-300">
+            <script>
+              atOptions = {
+                'key' : '00a1893d1605de9376529219e8c0dca3',
+                'format' : 'iframe',
+                'height' : 250,
+                'width' : 300,
+                'params' : {}
+              };
+            </script>
+            <script src="https://thewilddetail.com/00a1893d1605de9376529219e8c0dca3/invoke.js"></script>
+        </div>
+
+        <!-- 3. KODE NATIVE BANNER ADSTERRA -->
+        <div class="ad-native">
+            <script async="async" data-cfasync="false" src="https://thewilddetail.com/4ac27ece24247e6abb30fb78ea2f725e/invoke.js"></script>
+            <div id="container-4ac27ece24247e6abb30fb78ea2f725e"></div>
         </div>
     </div>
 
-    <!-- Tombol "Tonton Layar Full" dengan Smartlink -->
-    <div class="action-container">
-        <a href="https://thewilddetail.com/jcmqzgpi?key=24b55e3636d607271fdc76c2cd116ebe" target="_blank" class="smartlink-btn" id="fullScreenBtn">
-            🖥️ Tonton Layar Full
-        </a>
-    </div>
-
-    <!-- Area Native Ads Adsterra -->
-    <div class="native-container">
-        <script async="async" data-cfasync="false" src="https://thewilddetail.com/4ac27ece24247e6abb30fb78ea2f725e/invoke.js"></script>
-        <div id="container-4ac27ece24247e6abb30fb78ea2f725e"></div>
-    </div>
-
-    <!-- Area Social Bar Adsterra -->
-    <div class="banner-container">
-        <script src="https://thewilddetail.com/0b/28/3b/0b283b590e4a16de38f299a6ffe16906.js"></script>
-    </div>
-
-    <script>
-        const playOverlay = document.getElementById('playOverlay');
-        const ageModal = document.getElementById('ageModal');
-        const verifyBtn = document.getElementById('verifyBtn');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-        const fullScreenBtn = document.getElementById('fullScreenBtn');
-        const playerContainer = document.getElementById('playerContainer');
-        let popunderTriggered = false;
-
-        playOverlay.addEventListener('click', function() {
-            // 1. Eksekusi Popunder Adsterra HANYA SEKALI pada klik pertama tombol play
-            if (!popunderTriggered) {
-                popunderTriggered = true;
-                
-                const adScript = document.createElement('script');
-                adScript.type = 'text/javascript';
-                adScript.src = 'https://thewilddetail.com/d8/8e/b3/d88eb3d0170ef3478f8f44203ace8da9.js';
-                
-                document.body.appendChild(adScript);
-            }
-
-            // 2. Sembunyikan overlay agar video mulai terbuka
-            playOverlay.style.display = 'none';
-
-            // 3. Atur timer 5 detik untuk memunculkan pop-up konfirmasi umur
-            setTimeout(function() {
-                ageModal.style.display = 'flex';
-            }, 5000); // 5000 milidetik = 5 detik
-        });
-
-        // Tombol "Tonton Layar Full" membuka smartlink (di tab baru) sekaligus memaksa video ke mode layar penuh
-        fullScreenBtn.addEventListener('click', function() {
-            if (playerContainer.requestFullscreen) {
-                playerContainer.requestFullscreen();
-            } else if (playerContainer.webkitRequestFullscreen) { /* Safari */
-                playerContainer.webkitRequestFullscreen();
-            } else if (playerContainer.msRequestFullscreen) { /* IE11 */
-                playerContainer.msRequestFullscreen();
-            }
-        });
-
-        // Tombol tutup modal untuk melanjutkan video tanpa ke smartlink (opsional bagi penonton)
-        closeModalBtn.addEventListener('click', function() {
-            ageModal.style.display = 'none';
-        });
-
-        // Ketika tombol verifikasi diklik, smartlink akan terbuka di tab baru dan modal tertutup
-        verifyBtn.addEventListener('click', function() {
-            setTimeout(function() {
-                ageModal.style.display = 'none';
-            }, 500);
-        });
-    </script>
+    <!-- 4. KODE SOCIAL BAR ADSTERRA -->
+    <script src="https://thewilddetail.com/c4/4b/2c/c44b2ccc7687c2c208901dc7f9633fa2.js"></script>
 
 </body>
 </html>
