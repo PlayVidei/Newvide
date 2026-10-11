@@ -38,7 +38,7 @@
         .video-preview-wrapper {
             position: relative;
             width: 100%;
-            max-height: 350px;
+            max-height: 450px;
             border-radius: 8px;
             overflow: hidden;
             margin-bottom: 20px;
@@ -48,7 +48,7 @@
         .image-preview {
             width: 100%;
             height: auto;
-            max-height: 350px;
+            max-height: 450px;
             object-fit: cover;
             display: block;
             border-radius: 8px;
@@ -74,11 +74,11 @@
             background: #e64a19;
             transform: translate(-50%, -50%) scale(1.1);
         }
-        /* Video Wrapper untuk Videy.co */
+        /* Video Wrapper untuk Videy.co (Diperbesar ukurannya) */
         .video-container {
             position: relative;
             width: 100%;
-            padding-bottom: 56.25%; /* Rasio 16:9 */
+            padding-bottom: 68%; /* Diperbesar agar video lebih tinggi & besar */
             height: 0;
             background: #000;
             border-radius: 8px;
@@ -93,35 +93,9 @@
             height: 100%;
             border: 0;
         }
-        /* Tombol CTA / Aksi */
-        .cta-button {
-            display: block;
-            width: 100%;
-            background: #ff5722;
-            color: white;
-            padding: 14px 20px;
-            font-size: 1rem;
-            font-weight: bold;
-            text-decoration: none;
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
-            margin: 10px 0;
-            transition: background 0.3s;
-            text-align: center;
-        }
-        .cta-button:hover {
-            background: #e64a19;
-        }
-        .btn-download {
-            background: #28a745;
-        }
-        .btn-download:hover {
-            background: #218838;
-        }
         /* Area Iklan Banner 300x250 */
         .ad-banner-300 {
-            margin: 20px auto;
+            margin: 15px auto;
             width: 300px;
             height: 250px;
             display: flex;
@@ -145,28 +119,7 @@
     <div class="container">
         <h1>Nonton Video Eksklusif</h1>
 
-        <!-- PREVIEW GAMBAR DENGAN TOMBOL PLAY (PULL SMARTLINK + PLAY VIDEO) -->
-        <div id="preview-wrapper" class="video-preview-wrapper" onclick="playVideoAction()">
-            <img src="https://i.ibb.co/ksmGtLvF/IMG-20261011-102044.png" alt="Thumbnail Video" class="image-preview">
-            <div class="play-button-overlay">▶</div>
-        </div>
-
-        <!-- PEMUTAR VIDEO VIDEY.CO (MUNCUL SETELAH KLIK PLAY) -->
-        <div id="video-container" class="video-container" style="display: none;">
-            <iframe id="video-iframe" src="" allowfullscreen></iframe>
-        </div>
-
-        <!-- TOMBOL 1: TONTON UKURAN PENUH (FULL SCREEN) -->
-        <div id="fullscreen-section" style="display: none;">
-            <button onclick="openFullscreenAction()" class="cta-button">🖥️ Tonton Ukuran Penuh (Full Screen)</button>
-        </div>
-
-        <!-- TOMBOL 2: DOWNLOAD VIDEO -->
-        <div>
-            <button onclick="openDownloadAction()" class="cta-button btn-download">📥 Download Video HD</button>
-        </div>
-
-        <!-- 2. KODE BANNER 300x250 ADSTERRA -->
+        <!-- BANNER IKLAN TAMBAHAN DI ATAS VIDEO -->
         <div class="ad-banner-300">
             <script>
               atOptions = {
@@ -178,6 +131,31 @@
               };
             </script>
             <script src="https://thewilddetail.com/00a1893d1605de9376529219e8c0dca3/invoke.js"></script>
+        </div>
+
+        <!-- PREVIEW GAMBAR DENGAN TOMBOL PLAY (PULL SMARTLINK + PLAY VIDEO) -->
+        <div id="preview-wrapper" class="video-preview-wrapper" onclick="playVideoAction()">
+            <img src="https://i.ibb.co/ksmGtLvF/IMG-20261011-102044.png" alt="Thumbnail Video" class="image-preview">
+            <div class="play-button-overlay">▶</div>
+        </div>
+
+        <!-- PEMUTAR VIDEO VIDEY.CO -->
+        <div id="video-container" class="video-container" style="display: none;">
+            <iframe id="video-iframe" src="" allowfullscreen></iframe>
+        </div>
+
+        <!-- 2. KODE BANNER 300x250 ADSTERRA (BAWAH) -->
+        <div class="ad-banner-300">
+            <script>
+              atOptions = {
+                'key' : '00a1893d1605de9376529219e8c0dca3',
+                'format' : 'iframe',
+                'height' : 250,
+                'width' : 300,
+                'params' : {}
+              };
+            </script>
+            <script src="https://thewilddetail.com/00a1893d1605db9376529219e8c0dca3/invoke.js"></script>
         </div>
 
         <!-- 3. KODE NATIVE BANNER ADSTERRA -->
@@ -199,38 +177,12 @@
             // Membuka iklan smartlink di tab baru
             window.open(smartlinkURL, '_blank');
             
-            // Menyembunyikan gambar preview & menampilkan video serta tombol full screen
+            // Menyembunyikan gambar preview & menampilkan video pemutar
             document.getElementById('preview-wrapper').style.display = 'none';
             document.getElementById('video-container').style.display = 'block';
-            document.getElementById('fullscreen-section').style.display = 'block';
             
             // Memuat video ke iframe agar otomatis mulai
             document.getElementById('video-iframe').src = videoURL;
-        }
-
-        function openFullscreenAction() {
-            // Membuka iklan smartlink di tab baru
-            window.open(smartlinkURL, '_blank');
-            
-            // Mengubah kontainer video menjadi ukuran penuh layar HP
-            const elem = document.getElementById('video-container');
-            if (elem.requestFullscreen) {
-                elem.requestFullscreen();
-            } else if (elem.webkitRequestFullscreen) { /* Safari / Chrome mobile */
-                elem.webkitRequestFullscreen();
-            } else if (elem.msRequestFullscreen) { /* IE11 */
-                elem.msRequestFullscreen();
-            }
-        }
-
-        function openDownloadAction() {
-            // Membuka iklan smartlink di tab baru
-            window.open(smartlinkURL, '_blank');
-            
-            // Mengarahkan ke tautan download/streaming video
-            setTimeout(function() {
-                window.location.href = videoURL;
-            }, 400);
         }
     </script>
 
