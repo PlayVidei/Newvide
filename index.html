@@ -1,379 +1,140 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Mobile Video Player dengan Iklan Popunder, Social Bar & Smartlink</title>
-  <style>
-    /* Reset & Base Styles */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    body {
-      background-color: #0d0e12;
-      color: #ffffff;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      overflow-x: hidden;
-    }
-
-    /* Header Mobile */
-    .app-header {
-      padding: 14px 16px;
-      background: #16181f;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid #282a36;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-    }
-
-    .app-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: #e50914;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .badge-hd {
-      background: #e50914;
-      color: #fff;
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-weight: bold;
-    }
-
-    /* Main Container / Video Layout */
-    .content-container {
-      width: 100%;
-      max-width: 500px;
-      margin: 0 auto;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding-bottom: 90px; /* Space for Social Bar footer */
-    }
-
-    /* Player Wrapper (16:9 Aspect Ratio) */
-    .player-wrapper {
-      position: relative;
-      width: 100%;
-      padding-top: 56.25%; /* 16:9 Aspect Ratio */
-      background-color: #000;
-      overflow: hidden;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.8);
-    }
-
-    /* Element HTML5 Video */
-    .video-element {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      background: #000;
-    }
-
-    /* Layer Preview / Thumbnail (Popunder 1) */
-    .preview-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 20;
-      cursor: pointer;
-    }
-
-    .preview-overlay::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.4);
-    }
-
-    .preview-btn {
-      position: relative;
-      z-index: 2;
-      background: rgba(229, 9, 20, 0.9);
-      color: white;
-      padding: 12px 24px;
-      border-radius: 30px;
-      font-weight: bold;
-      font-size: 14px;
-      box-shadow: 0 4px 15px rgba(229, 9, 20, 0.5);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      animation: pulse 2s infinite;
-    }
-
-    /* Layer Play Button (Popunder 2) */
-    .play-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      display: none; /* Tampil setelah Popunder 1 diklik */
-      justify-content: center;
-      align-items: center;
-      z-index: 10;
-      cursor: pointer;
-    }
-
-    .play-btn-circle {
-      width: 70px;
-      height: 70px;
-      background: #e50914;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 0 25px rgba(229, 9, 20, 0.8);
-      transition: transform 0.2s ease;
-    }
-
-    .play-btn-circle:active {
-      transform: scale(0.9);
-    }
-
-    .play-icon {
-      width: 0;
-      height: 0;
-      border-top: 14px solid transparent;
-      border-bottom: 14px solid transparent;
-      border-left: 22px solid white;
-      margin-left: 5px;
-    }
-
-    /* Video Info Section */
-    .video-info {
-      padding: 16px;
-    }
-
-    .video-title {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 8px;
-      line-height: 1.3;
-    }
-
-    .video-stats {
-      font-size: 12px;
-      color: #a0a0a0;
-      display: flex;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    /* Download Button Style */
-    .download-btn {
-      width: 100%;
-      background: #e50914;
-      color: #ffffff;
-      border: none;
-      padding: 14px;
-      border-radius: 10px;
-      font-weight: bold;
-      font-size: 15px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
-      transition: background 0.2s, transform 0.1s;
-    }
-
-    .download-btn:active {
-      transform: scale(0.98);
-      background: #c80711;
-    }
-
-    /* Social Bar Footer (Muncul Full Lebar di Bawah Setelah Video Berputar) */
-    .social-bar-footer {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: #16181f;
-      border-top: 2px solid #e50914;
-      padding: 12px;
-      z-index: 100;
-      transform: translateY(100%);
-      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      box-shadow: 0 -5px 25px rgba(0,0,0,0.9);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Tampil setelah video berputar */
-    .social-bar-footer.active {
-      transform: translateY(0);
-    }
-
-    .social-bar-container {
-      width: 100%;
-      max-width: 500px;
-      min-height: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Animations */
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eksklusif Video Streaming & Hiburan</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .glow-effect:hover {
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.4);
+            transition: all 0.3s ease-in-out;
+        }
+    </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col justify-between">
 
-  <!-- Header -->
-  <header class="app-header">
-    <div class="app-title">
-      <span>STREAMPLAY</span>
-      <span class="badge-hd">ULTRA HD</span>
-    </div>
-  </header>
+    <!-- ADSTERRA: POPUNDER 1 -->
+    <script src="https://thewilddetail.com/58/5d/14/585d14a1088579ccf27a4840dfa44967.js"></script>
 
-  <!-- Content Container -->
-  <main class="content-container">
-    <div class="player-wrapper">
-      <!-- Video Element dengan Direct Link Videy.co Baru -->
-      <video id="myVideo" class="video-element" controls preload="metadata">
-        <source src="https://cdn.videy.co/JsRGaDAu1.mp4" type="video/mp4">
-        Browser Anda tidak mendukung pemutar video ini.
-      </video>
+    <!-- ADSTERRA: SOCIAL BAR -->
+    <script src="https://thewilddetail.com/c4/4b/2c/c44b2ccc7687c2c208901dc7f9633fa2.js"></script>
 
-      <!-- POPUNDER 1: Triggered on Preview Image Baru -->
-      <div id="previewOverlay" class="preview-overlay" style="background-image: url('https://i.ibb.co.com/N6k2KDVb/Screenshot-2026-1015-191118.png');">
-        <div class="preview-btn">
-          <span>KETUK UNTUK MEMBUKA PEMUTAR</span>
+    <!-- HEADER / NAVBAR -->
+    <header class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="bg-rose-600 p-2 rounded-lg text-white font-bold text-lg shadow-lg">
+                    <i class="fa-solid fa-play"></i>
+                </div>
+                <span class="text-xl font-extrabold tracking-wider bg-gradient-to-r from-rose-500 to-amber-500 bg-clip-text text-transparent">
+                    STREAMPLAY VIP
+                </span>
+            </div>
+            <a href="https://thewilddetail.com/jcmqzgpi?key=24b55e3636d607271fdc76c2cd116ebe" target="_blank" class="bg-rose-600 hover:bg-rose-700 text-white text-xs md:text-sm font-semibold px-4 py-2 rounded-full shadow-lg transition animate-pulse">
+                <i class="fa-solid fa-fire mr-1"></i> VIP Access
+            </a>
         </div>
-      </div>
+    </header>
 
-      <!-- POPUNDER 2: Triggered on Play Button -->
-      <div id="playOverlay" class="play-overlay">
-        <div class="play-btn-circle">
-          <div class="play-icon"></div>
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-4xl mx-auto px-4 py-6 w-full space-y-6">
+
+        <!-- Banner Info -->
+        <div class="text-center space-y-2 mb-4">
+            <h1 class="text-2xl md:text-3xl font-bold tracking-tight">Koleksi Video Eksklusif Pilihan</h1>
+            <p class="text-slate-400 text-sm">Putar video langsung di bawah atau klik tombol download untuk mengunduh.</p>
         </div>
-      </div>
-    </div>
 
-    <!-- Video Info -->
-    <div class="video-info">
-      <h1 class="video-title">Video Streaming Eksklusif</h1>
-      <div class="video-stats">
-        <span>👁️ 845K Penonton</span>
-        <span>⏱️ HD Quality</span>
-        <span>⭐ 4.9/5.0</span>
-      </div>
+        <!-- VIDEO 1 -->
+        <div class="bg-slate-800/80 border border-slate-700 rounded-2xl overflow-hidden shadow-xl glow-effect">
+            <div class="p-4 border-b border-slate-700/60 flex justify-between items-center">
+                <span class="text-sm font-semibold text-rose-400"><i class="fa-solid fa-film mr-2"></i>Video 01</span>
+                <span class="text-xs bg-slate-700 px-2.5 py-1 rounded-full text-slate-300">HD Quality</span>
+            </div>
+            <!-- Video Player HTML5 Direct CDN -->
+            <div class="relative bg-black">
+                <video controls poster="https://i.ibb.co/bMV3b75p/Screenshot-2026-1018-194557.png" class="w-full h-auto max-h-[480px] object-contain">
+                    <source src="https://cdn.videy.co/55sS7ugo1.mp4" type="video/mp4">
+                    Browser Anda tidak mendukung pemutar video.
+                </video>
+            </div>
+            <div class="p-4 flex flex-col sm:flex-row gap-3 items-center justify-between">
+                <span class="text-xs text-slate-400"><i class="fa-regular fa-clock mr-1"></i> Status: Ready HD</span>
+                <div class="w-full sm:w-auto">
+                    <a href="https://thewilddetail.com/jcmqzgpi?key=24b55e3636d607271fdc76c2cd116ebe" target="_blank" class="block text-center bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition shadow-lg hover:shadow-rose-600/30">
+                        <i class="fa-solid fa-download mr-1.5"></i> Download Video 01
+                    </a>
+                </div>
+            </div>
+        </div>
 
-      <!-- Tombol Download dengan Iklan Smartlink -->
-      <button id="downloadBtn" class="download-btn">
-        📥 Download Video (HD)
-      </button>
-    </div>
-  </main>
+        <!-- VIDEO 2 -->
+        <div class="bg-slate-800/80 border border-slate-700 rounded-2xl overflow-hidden shadow-xl glow-effect">
+            <div class="p-4 border-b border-slate-700/60 flex justify-between items-center">
+                <span class="text-sm font-semibold text-rose-400"><i class="fa-solid fa-film mr-2"></i>Video 02</span>
+                <span class="text-xs bg-slate-700 px-2.5 py-1 rounded-full text-slate-300">HD Quality</span>
+            </div>
+            <!-- Video Player HTML5 Direct CDN -->
+            <div class="relative bg-black">
+                <video controls poster="https://i.ibb.co/xqKfMVQv/Screenshot-2026-1018-194654.png" class="w-full h-auto max-h-[480px] object-contain">
+                    <source src="https://cdn.videy.co/mPtquSqd1.mp4" type="video/mp4">
+                    Browser Anda tidak mendukung pemutar video.
+                </video>
+            </div>
+            <div class="p-4 flex flex-col sm:flex-row gap-3 items-center justify-between">
+                <span class="text-xs text-slate-400"><i class="fa-regular fa-clock mr-1"></i> Status: Ready HD</span>
+                <div class="w-full sm:w-auto">
+                    <a href="https://thewilddetail.com/jcmqzgpi?key=24b55e3636d607271fdc76c2cd116ebe" target="_blank" class="block text-center bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition shadow-lg hover:shadow-rose-600/30">
+                        <i class="fa-solid fa-download mr-1.5"></i> Download Video 02
+                    </a>
+                </div>
+            </div>
+        </div>
 
-  <!-- SOCIAL BAR FOOTER -->
-  <div id="socialBarFooter" class="social-bar-footer">
-    <div id="socialBarContainer" class="social-bar-container">
-      <!-- Skrip Sosial Bar akan dimuat otomatis di sini saat video berputar -->
-    </div>
-  </div>
+        <!-- VIDEO 3 -->
+        <div class="bg-slate-800/80 border border-slate-700 rounded-2xl overflow-hidden shadow-xl glow-effect">
+            <div class="p-4 border-b border-slate-700/60 flex justify-between items-center">
+                <span class="text-sm font-semibold text-rose-400"><i class="fa-solid fa-film mr-2"></i>Video 03</span>
+                <span class="text-xs bg-slate-700 px-2.5 py-1 rounded-full text-slate-300">HD Quality</span>
+            </div>
+            <!-- Video Player HTML5 Direct CDN -->
+            <div class="relative bg-black">
+                <video controls poster="https://i.ibb.co/QvhdyrZz/Screenshot-2026-1018-194741.png" class="w-full h-auto max-h-[480px] object-contain">
+                    <source src="https://cdn.videy.co/B0cbn4C41.mp4" type="video/mp4">
+                    Browser Anda tidak mendukung pemutar video.
+                </video>
+            </div>
+            <div class="p-4 flex flex-col sm:flex-row gap-3 items-center justify-between">
+                <span class="text-xs text-slate-400"><i class="fa-regular fa-clock mr-1"></i> Status: Ready HD</span>
+                <div class="w-full sm:w-auto">
+                    <a href="https://thewilddetail.com/jcmqzgpi?key=24b55e3636d607271fdc76c2cd116ebe" target="_blank" class="block text-center bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition shadow-lg hover:shadow-rose-600/30">
+                        <i class="fa-solid fa-download mr-1.5"></i> Download Video 03
+                    </a>
+                </div>
+            </div>
+        </div>
 
-  <script>
-    // Konfigurasi Link Skrip Iklan Anda
-    const CONFIG = {
-      popunder1Script: 'https://thewilddetail.com/58/5d/14/585d14a1088579ccf27a4840dfa44967.js',
-      popunder2Script: 'https://thewilddetail.com/d8/8e/b3/d88eb3d0170ef3478f8f44203ace8da9.js',
-      socialBarScript: 'https://thewilddetail.com/c4/4b/2c/c44b2ccc7687c2c208901dc7f9633fa2.js',
-      smartlinkUrl: 'https://thewilddetail.com/jcmqzgpi?key=24b55e3636d607271fdc76c2cd116ebe'
-    };
+        <!-- NATIVE BANNER DI BAWAH SEMUA VIDEO -->
+        <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/60 text-center min-h-[120px] flex flex-col items-center justify-center mt-8">
+            <span class="text-[10px] uppercase tracking-widest text-slate-500 mb-2">Advertisement</span>
+            <script async="async" data-cfasync="false" src="https://thewilddetail.com/4ac27ece24247e6abb30fb78ea2f725e/invoke.js"></script>
+            <div id="container-4ac27ece24247e6abb30fb78ea2f725e"></div>
+        </div>
 
-    // DOM Elements
-    const previewOverlay = document.getElementById('previewOverlay');
-    const playOverlay = document.getElementById('playOverlay');
-    const myVideo = document.getElementById('myVideo');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const socialBarFooter = document.getElementById('socialBarFooter');
-    const socialBarContainer = document.getElementById('socialBarContainer');
+    </main>
 
-    let socialBarLoaded = false;
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-6 mt-8 text-center text-xs text-slate-500">
+        <p>&copy; 2026 StreamPlay VIP. All rights reserved.</p>
+    </footer>
 
-    // Fungsi untuk menyuntikkan skrip popunder secara dinamis
-    function injectScript(url) {
-      if (url) {
-        const script = document.createElement('script');
-        script.src = url;
-        script.async = true;
-        document.body.appendChild(script);
-      }
-    }
-
-    // Event 1: Klik pada Preview (Popunder 1 terpanggil)
-    previewOverlay.addEventListener('click', function() {
-      injectScript(CONFIG.popunder1Script);
-
-      // Sembunyikan Preview, tampilkan Tombol Play
-      previewOverlay.style.display = 'none';
-      playOverlay.style.display = 'flex';
-    });
-
-    // Event 2: Klik pada Tombol Play (Popunder 2 terpanggil & Video Berputar)
-    playOverlay.addEventListener('click', function() {
-      injectScript(CONFIG.popunder2Script);
-
-      // Sembunyikan Overlay Play & Jalankan Video
-      playOverlay.style.display = 'none';
-      myVideo.play();
-    });
-
-    // Event 3: Klik pada Tombol Download (Membuka Smartlink Iklan)
-    downloadBtn.addEventListener('click', function() {
-      if (CONFIG.smartlinkUrl) {
-        window.open(CONFIG.smartlinkUrl, '_blank');
-      }
-    });
-
-    // Event 4: Munculkan Social Bar Full Layar Footer saat Video Berputar
-    myVideo.addEventListener('play', function() {
-      socialBarFooter.classList.add('active');
-
-      // Muat skrip social bar jika belum dimuat
-      if (!socialBarLoaded) {
-        const sbScript = document.createElement('script');
-        sbScript.src = CONFIG.socialBarScript;
-        sbScript.async = true;
-        socialBarContainer.appendChild(sbScript);
-        socialBarLoaded = true;
-      }
-    });
-  </script>
 </body>
 </html>
